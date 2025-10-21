@@ -6,7 +6,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/fireba
 import { 
   getAuth, 
   createUserWithEmailAndPassword, 
-  signOut 
+  signOut,
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
 import { 
   getFirestore, 
@@ -55,6 +56,16 @@ const adminCount = document.getElementById("adminCount");
 const logoutBtn = document.getElementById("logoutBtn");
 
 let administradores = [];
+
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    console.warn("⚠️ No hay sesión activa, redirigiendo...");
+    window.location.href = "../html/login.html";
+  } else {
+    document.getElementById("userName").textContent = user.email;
+    loadAdministradores();
+  }
+});
 
 // ========================================
 // MODAL CONTROL
@@ -239,5 +250,5 @@ logoutBtn.addEventListener("click", async () => {
 // INICIALIZACIÓN
 // ========================================
 
-loadAdministradores();
+//loadAdministradores();
 console.log("🚀 Sistema de administradores activo con Auth + Firestore");
