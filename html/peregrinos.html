@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peregrinos - Cáritas de Monterrey</title>
+    <link rel="stylesheet" href="../css/dashboard-styles.css">
+    <link rel="stylesheet" href="../css/peregrinos-styles.css">
+    <link rel="icon" href="../assets/caritas-favicon.png" type="image/png">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <img src="../assets/caritasmty-logo-white.png" alt="Cáritas Logo" class="header-logo">
+                <h1>Panel Administrativo</h1>
+            </div>
+            <div class="user-section">
+                <div class="user-info">
+                    <span class="user-name" id="userName">Admin Usuario</span>
+                    <span class="user-role">Administrador</span>
+                </div>
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar">
+            <nav class="sidebar-nav">
+                <a href="../html/dashboard.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="../html/peregrinos.html" class="nav-item active">
+                    <i class="fas fa-users"></i>
+                    <span>Peregrinos</span>
+                </a>
+                <a href="../html/anuncios.html" class="nav-item">
+                    <i class="fas fa-bullhorn"></i>
+                    <span>Anuncios</span>
+                </a>
+                <a href="../html/administradores.html" class="nav-item">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Administradores</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Content Area -->
+        <div class="dashboard-content">
+            <!-- Page Title -->
+            <section class="page-header">
+                <div>
+                    <h2><i class="fas fa-users"></i>Peregrinos</h2>
+                    <p>Gestión y estadísticas de usuarios de albergue por ubicación</p>
+                </div>
+                <button class="btn-refresh" id="refreshBtn">
+                    <i class="fas fa-sync-alt"></i> Actualizar
+                </button>
+            </section>
+
+            <!-- Location Cards -->
+            <section class="locations-grid">
+                <div class="location-card" data-location="posada">
+                    <div class="location-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <div class="location-info">
+                        <h3>Posada del Peregrino</h3>
+                        <p class="location-total" id="totalPosada">Cargando...</p>
+                    </div>
+                    <button class="btn-view" data-modal="posada">
+                        <i class="fas fa-chart-bar"></i> Ver Estadísticas
+                    </button>
+                </div>
+
+                <div class="location-card" data-location="divina">
+                    <div class="location-icon">
+                        <i class="fas fa-church"></i>
+                    </div>
+                    <div class="location-info">
+                        <h3>Divina Providencia</h3>
+                        <p class="location-total" id="totalDivina">Cargando...</p>
+                    </div>
+                    <button class="btn-view" data-modal="divina">
+                        <i class="fas fa-chart-bar"></i> Ver Estadísticas
+                    </button>
+                </div>
+
+                <div class="location-card" data-location="apodaca">
+                    <div class="location-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div class="location-info">
+                        <h3>Apodaca</h3>
+                        <p class="location-total" id="totalApodaca">Cargando...</p>
+                    </div>
+                    <button class="btn-view" data-modal="apodaca">
+                        <i class="fas fa-chart-bar"></i> Ver Estadísticas
+                    </button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal Posada del Peregrino -->
+    <div class="modal" id="modalPosada">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-home"></i> Posada del Peregrino</h3>
+                <button class="modal-close" data-modal="posada">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="chart-container">
+                    <canvas id="chartPosada"></canvas>
+                </div>
+                <div class="stats-summary">
+                    <div class="stat-item">
+                        <span class="stat-label">Mujeres:</span>
+                        <span class="stat-value" id="statMujeresPosada">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Hombres:</span>
+                        <span class="stat-value" id="statHombresPosada">0</span>
+                    </div>
+                    <div class="stat-item stat-total">
+                        <span class="stat-label">Total:</span>
+                        <span class="stat-value" id="statTotalPosada">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Divina Providencia -->
+    <div class="modal" id="modalDivina">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-church"></i> Divina Providencia</h3>
+                <button class="modal-close" data-modal="divina">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="chart-container">
+                    <canvas id="chartDivina"></canvas>
+                </div>
+                <div class="stats-summary">
+                    <div class="stat-item">
+                        <span class="stat-label">Mujeres:</span>
+                        <span class="stat-value" id="statMujeresDivina">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Hombres:</span>
+                        <span class="stat-value" id="statHombresDivina">0</span>
+                    </div>
+                    <div class="stat-item stat-total">
+                        <span class="stat-label">Total:</span>
+                        <span class="stat-value" id="statTotalDivina">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Apodaca -->
+    <div class="modal" id="modalApodaca">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-building"></i> Apodaca</h3>
+                <button class="modal-close" data-modal="apodaca">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="chart-container">
+                    <canvas id="chartApodaca"></canvas>
+                </div>
+                <div class="stats-summary">
+                    <div class="stat-item">
+                        <span class="stat-label">Mujeres:</span>
+                        <span class="stat-value" id="statMujeresApodaca">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Hombres:</span>
+                        <span class="stat-value" id="statHombresApodaca">0</span>
+                    </div>
+                    <div class="stat-item stat-total">
+                        <span class="stat-label">Total:</span>
+                        <span class="stat-value" id="statTotalApodaca">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Firebase (comentado temporalmente) -->
+    <!--
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    -->
+    
+    <!-- Peregrinos Script -->
+    <script src="../JS/peregrinos.js"></script>
+</body>
+</html>

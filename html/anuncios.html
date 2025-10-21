@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anuncios - Cáritas de Monterrey</title>
+    <link rel="stylesheet" href="../css/dashboard-styles.css">
+    <link rel="stylesheet" href="../css/anuncios-styles.css">
+    <link rel="icon" href="../assets/caritas-favicon.png" type="image/png">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <img src="../assets/caritasmty-logo-white.png" alt="Cáritas Logo" class="header-logo">
+                <h1>Panel Administrativo</h1>
+            </div>
+            <div class="user-section">
+                <div class="user-info">
+                    <span class="user-name" id="userName">Admin Usuario</span>
+                    <span class="user-role">Administrador</span>
+                </div>
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar">
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="peregrinos.html" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Peregrinos</span>
+                </a>
+                <a href="anuncios.html" class="nav-item active">
+                    <i class="fas fa-bullhorn"></i>
+                    <span>Anuncios</span>
+                </a>
+                <a href="administradores.html" class="nav-item">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Administradores</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Content Area -->
+        <div class="dashboard-content">
+            <!-- Page Header -->
+            <section class="page-header">
+                <div>
+                    <h2><i class="fas fa-bullhorn"></i> Anuncios</h2>
+                    <p>Crea y gestiona anuncios para la comunidad de Cáritas de Monterrey</p>
+                </div>
+            </section>
+
+            <!-- Create Announcement Card -->
+            <section class="create-announcement-section">
+                <div class="announcement-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-plus-circle"></i> Crear Nuevo Anuncio</h3>
+                        <p>Comparte información importante con la comunidad</p>
+                    </div>
+                    <button class="btn-create-announcement" id="btnCreateAnnouncement">
+                        <i class="fas fa-bullhorn"></i> Crear Anuncio
+                    </button>
+                </div>
+            </section>
+
+            <!-- Announcements List -->
+            <section class="announcements-list-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-list"></i> Anuncios Publicados</h3>
+                    <div class="filter-options">
+                        <select id="filterStatus" class="filter-select">
+                            <option value="all">Todos los anuncios</option>
+                            <option value="recent">Recientes</option>
+                            <option value="older">Antiguos</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="announcements-grid" id="announcementsGrid">
+                    <!-- Los anuncios se cargarán aquí dinámicamente -->
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>No hay anuncios publicados</p>
+                        <small>Crea tu primer anuncio haciendo clic en "Crear Anuncio"</small>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal Crear Anuncio -->
+    <div class="modal" id="modalCreateAnnouncement">
+        <div class="modal-content modal-announcement">
+            <div class="modal-header">
+                <h3><i class="fas fa-bullhorn"></i> Crear Anuncio</h3>
+                <button class="modal-close" id="closeModalBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="announcementForm">
+                    <div class="form-group">
+                        <label for="announcementTitulo">
+                            <i class="fas fa-heading"></i> Título del Anuncio
+                        </label>
+                        <input 
+                            type="text" 
+                            id="announcementTitulo" 
+                            name="titulo"
+                            class="form-input"
+                            placeholder="Ingresa un título llamativo..."
+                            required
+                            maxlength="100"
+                        >
+                        <span class="char-counter" id="tituloCounter">0/100</span>
+                    </div>
+
+                    <!-- NUEVO: Campo 'descripcion' agregado -->
+                    <div class="form-group">
+                        <label for="announcementDescripcion">
+                            <i class="fas fa-text-width"></i> Descripción Corta
+                        </label>
+                        <input 
+                            type="text" 
+                            id="announcementDescripcion" 
+                            name="descripcion"
+                            class="form-input"
+                            placeholder="Breve resumen del anuncio..."
+                            required
+                            maxlength="150"
+                        >
+                        <span class="char-counter" id="descripcionCounter">0/150</span>
+                    </div>
+
+                    <!-- CAMBIO: Renombrado de 'content' a 'cuerpo' para coincidir con Kotlin -->
+                    <div class="form-group">
+                        <label for="announcementCuerpo">
+                            <i class="fas fa-align-left"></i> Contenido del Anuncio
+                        </label>
+                        <textarea 
+                            id="announcementCuerpo" 
+                            name="cuerpo"
+                            class="form-textarea"
+                            placeholder="Escribe el contenido completo de tu anuncio..."
+                            required
+                            maxlength="1000"
+                            rows="6"
+                        ></textarea>
+                        <span class="char-counter" id="cuerpoCounter">0/1000</span>
+                    </div>
+
+                    <!-- NUEVO: Campo 'tipo' agregado -->
+                    <div class="form-group">
+                        <label for="announcementTipo">
+                            <i class="fas fa-tag"></i> Tipo de Anuncio
+                        </label>
+                        <select 
+                            id="announcementTipo" 
+                            name="tipo"
+                            class="form-select"
+                            required
+                        >
+                            <option value="">Selecciona un tipo...</option>
+                            <option value="General">General</option>
+                            <option value="Urgente">Urgente</option>
+                            <option value="Aviso">Aviso</option>
+                            <option value="Comunicado">Comunicado</option>
+                        </select>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" id="btnCancelForm">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                        <button type="submit" class="btn-submit" id="btnSubmitAnnouncement">
+                            <i class="fas fa-paper-plane"></i> Enviar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase (comentado temporalmente) -->
+    <!--
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    -->
+    
+    <!-- Anuncios Script -->
+    <script src="../JS/anuncios.js"></script>
+</body>
+</html>

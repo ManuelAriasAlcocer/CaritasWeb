@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Cáritas de Monterrey</title>
+    <link rel="stylesheet" href="../css/login-styles.css">
+    <link rel="icon" href="../assets/caritas-favicon.png" type="image/png">
+</head>
+<body>
+    <!-- Background Carousel -->
+    <div class="background-carousel">
+        <div class="carousel-slide active" style="background-image: url('../assets/carrusel/imagen1.jpg');"></div>
+        <div class="carousel-slide" style="background-image: url('../assets/carrusel/imagen2.jpg');"></div>
+        <div class="carousel-slide" style="background-image: url('../assets/carrusel/imagen3.jpg');"></div>
+        <div class="carousel-slide" style="background-image: url('../assets/carrusel/imagen4.jpg');"></div>
+        <div class="carousel-overlay"></div>
+    </div>
+    
+    <div class="login-container">
+        <div class="login-box">
+            <!-- Logo Section -->
+            <div class="logo-section">
+                <div class="logo-placeholder">
+                    <img src="../assets/caritasmty-logo-white.png" alt="Cáritas Monterrey Logo">
+                </div>
+            </div>
+
+            <!-- Login Form -->
+            <div class="form-section">
+                <h1>Iniciar Sesión</h1>
+                <p>Panel administrativo Posada del Peregrino</p>
+
+                <form id="loginForm">
+                    <div class="input-group">
+                        <label for="adminId">Usuario</label>
+                        <input 
+                            type="text" 
+                            id="adminId" 
+                            name="adminId"
+                            placeholder="Ingresa tu usuario"
+                            required
+                            autocomplete="username"
+                        >
+                    </div>
+
+                    <div class="input-group">
+                        <label for="password">Contraseña</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password"
+                            placeholder="Ingresa tu contraseña"
+                            required
+                            autocomplete="current-password"
+                        >
+                    </div>
+
+                    <div class="form-options">
+                        <label class="remember-me">
+                            <input type="checkbox" id="rememberMe">
+                            <span>Recordarme</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="login-btn" id="loginBtn">
+                        Ingresar
+                    </button>
+
+                    <div id="errorMessage" class="error-message">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                        </svg>
+                        <span id="errorText">Usuario o contraseña incorrectos</span>
+                    </div>
+                </form>
+
+                <div class="divider">
+                    <span>o</span>
+                </div>
+
+                <div class="info-section">
+                    <p>¿Necesitas ayuda?</p>
+                    <a href="mailto:admin@caritas.mx" class="contact-link">Contacta al administrador</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="page-footer">
+        <div class="footer-content">
+            <p class="footer-text">© 2025 Cáritas de Monterrey - Transformando vidas.</p>
+            <div class="footer-links">
+                <a href="https://www.caritas.org.mx" target="_blank" rel="noopener">www.caritas.mx</a>
+                <span class="separator">|</span>
+                <a href="#" onclick="alert('Términos de Servicio'); return false;">Términos de servicio</a>
+                <span class="separator">|</span>
+                <a href="#" onclick="alert('Política de Privacidad'); return false;">Privacidad</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK (comentado temporalmente) -->
+    <!--
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    -->
+    
+    <!-- Carousel Script -->
+    <script src="../JS/carousel.js"></script>
+    
+    <!-- Login Script Provisional (sin Firebase) -->
+    <script src="../JS/login-provisional.js"></script>
+</body>
+</html>
