@@ -5,22 +5,18 @@
 // Importar Firebase (si usas módulos con V9+)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
 
-import { setPersistence, browserLocalPersistence, browserSessionPersistence } 
-  from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
+import { 
+  getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut,
+  setPersistence, browserLocalPersistence, browserSessionPersistence
+} from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
 
 
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } 
-    from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
-
-// ========================================
-// CONFIGURACIÓN DE FIREBASE
-// ========================================
 
 const firebaseConfig = {
   apiKey: "AIzaSyCFUZ6t9EmAerXczNgA-9D-kwlW8_4fA6I",
   authDomain: "appcaritas-tec.firebaseapp.com",
-  projectId: "appcaritas-tec",
-  storageBucket: "appcaritas-tec.firebasestorage.app",
+  projectId: "appcaritas-tec", 
+  storageBucket: "appcaritas-tec.appspot.com",
   messagingSenderId: "324635812073",
   appId: "1:324635812073:web:e70fe9595e87c412c09078"
 };
@@ -63,11 +59,12 @@ loginForm.addEventListener('submit', async (e) => {
     const rememberMe = rememberMeCheckbox.checked;
 
     hideError();
+if (!email || !password) {
+  showError('Por favor completa todos los campos obligatorios');
+  alert('Por favor completa todos los campos obligatorios'); // 🔔 visual para ti
+  return;
+}
 
-    if (!email || !password) {
-        showError('Por favor completa todos los campos');
-        return;
-    }
 
     loginBtn.disabled = true;
     loginBtn.textContent = 'Verificando...';
@@ -96,13 +93,18 @@ loginForm.addEventListener('submit', async (e) => {
         setTimeout(() => window.location.href = 'dashboard.html', 700);
 
     } catch (error) {
-        console.error(error);
-        if (error.code === 'auth/invalid-email') showError('Correo no válido');
-        else if (error.code === 'auth/user-not-found') showError('Usuario no encontrado');
-        else if (error.code === 'auth/wrong-password') showError('Contraseña incorrecta');
-        else showError('Error al iniciar sesión');
-        resetLoginButton();
-    }
+  console.error(error);
+  
+  if (error.code === 'auth/invalid-email') showError('Correo no válido');
+  else if (error.code === 'auth/user-not-found') showError('Usuario no encontrado');
+  else if (error.code === 'auth/wrong-password') showError('Contraseña incorrecta');
+  else if (error.code === 'auth/network-request-failed') showError('Error de conexión. Verifica tu red.');
+  else showError('Error al iniciar sesión. Intenta nuevamente.');
+
+  alert(`❌ Error: ${error.message}`); // 🔔 muestra lo que Firebase devuelve
+  resetLoginButton();
+}
+
 });
 
 // ========================================
