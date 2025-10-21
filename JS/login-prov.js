@@ -1,221 +1,140 @@
 // ========================================
-// LOGIN SCRIPT PROVISIONAL (SIN FIREBASE)
+// LOGIN CON FIREBASE (EMAIL + PASSWORD)
 // ========================================
 
-document.addEventListener('DOMContentLoaded', function() {
-    
-    // Usuario administrador único
-    const ADMIN_USER = {
-        username: 'admin',
-        password: 'admin123',
-        name: 'Administrador',
-        role: 'Administrador',
-        id: 'admin001'
-    };
+// Importar Firebase (si usas módulos con V9+)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
 
-    // Elementos del DOM
-    const loginForm = document.getElementById('loginForm');
-    const adminIdInput = document.getElementById('adminId');
-    const passwordInput = document.getElementById('password');
-    const rememberMeCheckbox = document.getElementById('rememberMe');
-    const loginBtn = document.getElementById('loginBtn');
-    const errorMessage = document.getElementById('errorMessage');
-    const errorText = document.getElementById('errorText');
+import { initializeApp } from "firebase/app";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } 
+    from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
 
-    // ========================================
-    // VERIFICAR SI YA HAY SESIÓN ACTIVA
-    // ========================================
+// ========================================
+// CONFIGURACIÓN DE FIREBASE
+// ========================================
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCFUZ6t9EmAerXczNgA-9D-kwlW8_4fA6I",
+  authDomain: "appcaritas-tec.firebaseapp.com",
+  projectId: "appcaritas-tec",
+  storageBucket: "appcaritas-tec.firebasestorage.app",
+  messagingSenderId: "324635812073",
+  appId: "1:324635812073:web:e70fe9595e87c412c09078"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// ========================================
+// ELEMENTOS DEL DOM
+// ========================================
+
+const loginForm = document.getElementById('loginForm');
+const emailInput = document.getElementById('adminId'); // usa el mismo input
+const passwordInput = document.getElementById('password');
+const rememberMeCheckbox = document.getElementById('rememberMe');
+const loginBtn = document.getElementById('loginBtn');
+const errorMessage = document.getElementById('errorMessage');
+const errorText = document.getElementById('errorText');
+
+// ========================================
+// VERIFICAR SI YA HAY SESIÓN ACTIVA
+// ========================================
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        console.log('✅ Sesión activa con:', user.email);
+        window.location.href = 'dashboard.html';
+    }
+});
+
+// ========================================
+// MANEJAR ENVÍO DEL FORMULARIO
+// ========================================
+
+loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
     
-    function checkExistingSession() {
-        const savedUser = localStorage.getItem('currentUser');
-        const rememberMe = localStorage.getItem('rememberMe');
-        
-        if (savedUser && rememberMe === 'true') {
-            // Usuario tiene sesión guardada, cargar datos
-            const userData = JSON.parse(savedUser);
-            adminIdInput.value = userData.username;
-            rememberMeCheckbox.checked = true;
-            
-            console.log('✅ Sesión guardada encontrada para:', userData.username);
-        }
-        
-        // Si hay sesión activa, redirigir al dashboard
-        const isLoggedIn = sessionStorage.getItem('isLoggedIn');
-        if (isLoggedIn === 'true') {
-            console.log('✅ Usuario ya tiene sesión activa, redirigiendo...');
-            window.location.href = 'dashboard.html';
-        }
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+    const rememberMe = rememberMeCheckbox.checked;
+
+    hideError();
+
+    if (!email || !password) {
+        showError('Por favor completa todos los campos');
+        return;
     }
 
-    // ========================================
-    // MANEJAR ENVÍO DEL FORMULARIO
-    // ========================================
-    
-    loginForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const username = adminIdInput.value.trim();
-        const password = passwordInput.value.trim();
-        const rememberMe = rememberMeCheckbox.checked;
-        
-        // Limpiar mensaje de error previo
-        hideError();
-        
-        // Validar campos vacíos
-        if (!username || !password) {
-            showError('Por favor completa todos los campos');
-            return;
-        }
-        
-        // Mostrar botón como cargando
-        loginBtn.disabled = true;
-        loginBtn.textContent = 'Verificando...';
-        
-        // Simular delay de red (opcional, para hacerlo más realista)
-        setTimeout(() => {
-            authenticateUser(username, password, rememberMe);
-        }, 800);
-    });
+    loginBtn.disabled = true;
+    loginBtn.textContent = 'Verificando...';
 
-    // ========================================
-    // AUTENTICAR USUARIO
-    // ========================================
-    
-    function authenticateUser(username, password, rememberMe) {
-        // Verificar si es el usuario administrador
-        if (username.toLowerCase() !== ADMIN_USER.username.toLowerCase()) {
-            showError('Usuario no encontrado');
-            resetLoginButton();
-            return;
-        }
-        
-        // Verificar contraseña
-        if (password !== ADMIN_USER.password) {
-            showError('Contraseña incorrecta');
-            resetLoginButton();
-            return;
-        }
-        
-        // ✅ Autenticación exitosa
-        console.log('✅ Login exitoso para:', username);
-        
-        // Guardar sesión
-        const userData = {
-            username: ADMIN_USER.username,
-            name: ADMIN_USER.name,
-            role: ADMIN_USER.role,
-            id: ADMIN_USER.id,
-            loginTime: new Date().toISOString()
-        };
-        
-        // Guardar en sessionStorage (se borra al cerrar navegador)
+    try {
+        const persistence = rememberMe 
+            ? firebase.auth.Auth.Persistence.LOCAL 
+            : firebase.auth.Auth.Persistence.SESSION;
+
+        await auth.setPersistence(persistence);
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        console.log('✅ Login exitoso:', user.email);
+
+        // Guardar en sessionStorage (extra, si lo deseas)
         sessionStorage.setItem('isLoggedIn', 'true');
-        sessionStorage.setItem('currentUser', JSON.stringify(userData));
-        
-        // Si "Recordarme" está activado, guardar en localStorage
-        if (rememberMe) {
-            localStorage.setItem('rememberMe', 'true');
-            localStorage.setItem('currentUser', JSON.stringify(userData));
-            console.log('💾 Sesión guardada para próximos accesos');
-        } else {
-            localStorage.removeItem('rememberMe');
-            localStorage.removeItem('currentUser');
-        }
-        
-        // Mostrar mensaje de éxito
+        sessionStorage.setItem('currentUser', JSON.stringify({
+            email: user.email,
+            uid: user.uid,
+            loginTime: new Date().toISOString()
+        }));
+
         loginBtn.textContent = '✓ Acceso concedido';
         loginBtn.style.background = '#27ae60';
-        
-        // Redirigir al dashboard
-        setTimeout(() => {
-            window.location.href = 'dashboard.html';
-        }, 500);
+        setTimeout(() => window.location.href = 'dashboard.html', 700);
+
+    } catch (error) {
+        console.error(error);
+        if (error.code === 'auth/invalid-email') showError('Correo no válido');
+        else if (error.code === 'auth/user-not-found') showError('Usuario no encontrado');
+        else if (error.code === 'auth/wrong-password') showError('Contraseña incorrecta');
+        else showError('Error al iniciar sesión');
+        resetLoginButton();
     }
-
-    // ========================================
-    // MOSTRAR/OCULTAR ERRORES
-    // ========================================
-    
-    function showError(message) {
-        errorText.textContent = message;
-        errorMessage.style.display = 'flex';
-        
-        // Agregar animación
-        errorMessage.style.animation = 'shake 0.5s';
-        setTimeout(() => {
-            errorMessage.style.animation = '';
-        }, 500);
-        
-        // Auto-ocultar después de 5 segundos
-        setTimeout(hideError, 5000);
-    }
-    
-    function hideError() {
-        errorMessage.style.display = 'none';
-    }
-    
-    function resetLoginButton() {
-        loginBtn.disabled = false;
-        loginBtn.textContent = 'Ingresar';
-        loginBtn.style.background = '';
-    }
-
-    // ========================================
-    // MANEJAR "RECORDARME"
-    // ========================================
-    
-    rememberMeCheckbox.addEventListener('change', function() {
-        if (this.checked) {
-            console.log('🔒 Recordarme activado');
-        } else {
-            console.log('🔓 Recordarme desactivado');
-            localStorage.removeItem('rememberMe');
-            localStorage.removeItem('currentUser');
-        }
-    });
-
-    // ========================================
-    // OCULTAR ENLACE "OLVIDASTE TU CONTRASEÑA"
-    // ========================================
-    
-    const forgotPasswordLink = document.querySelector('.forgot-password');
-    if (forgotPasswordLink) {
-        forgotPasswordLink.style.display = 'none';
-    }
-
-    // ========================================
-    // ANIMACIÓN DE SHAKE PARA ERRORES
-    // ========================================
-    
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
-        }
-    `;
-    document.head.appendChild(style);
-
-    // ========================================
-    // LIMPIAR CAMPOS AL PRESIONAR ESC
-    // ========================================
-    
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            adminIdInput.value = '';
-            passwordInput.value = '';
-            hideError();
-        }
-    });
-
-    // ========================================
-    // INICIALIZACIÓN
-    // ========================================
-    
-    checkExistingSession();
-    
-    console.log('🔐 Sistema de login provisional cargado');
-    console.log('👤 Usuario único: admin');
-    console.log('🔑 Contraseña: admin123');
 });
+
+// ========================================
+// FUNCIONES DE UI
+// ========================================
+
+function showError(message) {
+    errorText.textContent = message;
+    errorMessage.style.display = 'flex';
+    errorMessage.style.animation = 'shake 0.5s';
+    setTimeout(() => errorMessage.style.animation = '', 500);
+    setTimeout(hideError, 5000);
+}
+
+function hideError() {
+    errorMessage.style.display = 'none';
+}
+
+function resetLoginButton() {
+    loginBtn.disabled = false;
+    loginBtn.textContent = 'Ingresar';
+    loginBtn.style.background = '';
+}
+
+// ========================================
+// ANIMACIÓN DE ERROR
+// ========================================
+
+const style = document.createElement('style');
+style.textContent = `
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}`;
+document.head.appendChild(style);
+
+console.log('🔐 Login con Firebase cargado');
