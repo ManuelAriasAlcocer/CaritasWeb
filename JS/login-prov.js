@@ -5,7 +5,10 @@
 // Importar Firebase (si usas módulos con V9+)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
 
-import { initializeApp } from "firebase/app";
+import { setPersistence, browserLocalPersistence, browserSessionPersistence } 
+  from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
+
+
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } 
     from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
 
@@ -71,10 +74,10 @@ loginForm.addEventListener('submit', async (e) => {
 
     try {
         const persistence = rememberMe 
-            ? firebase.auth.Auth.Persistence.LOCAL 
-            : firebase.auth.Auth.Persistence.SESSION;
+    ? browserLocalPersistence 
+    : browserSessionPersistence;
+    await setPersistence(auth, persistence);
 
-        await auth.setPersistence(persistence);
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
