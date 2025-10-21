@@ -101,7 +101,7 @@ if (!email || !password) {
   else if (error.code === 'auth/network-request-failed') showError('Error de conexión. Verifica tu red.');
   else showError('Error al iniciar sesión. Intenta nuevamente.');
 
-  alert(`❌ Error: ${error.message}`); // 🔔 muestra lo que Firebase devuelve
+  //alert(`❌ Error: ${error.message}`); // 🔔 muestra lo que Firebase devuelve
   resetLoginButton();
 }
 
