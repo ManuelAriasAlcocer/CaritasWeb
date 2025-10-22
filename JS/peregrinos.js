@@ -3,12 +3,18 @@
 // ========================================
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
+import {
+  getFirestore,
+} from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
 // ========================================
 // CONFIGURACIÓN FIREBASE
 // ========================================
-
 const firebaseConfig = {
   apiKey: "AIzaSyCFUZ6t9EmAerXczNgA-9D-kwlW8_4fA6I",
   authDomain: "appcaritas-tec.firebaseapp.com",
@@ -20,6 +26,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
 console.log("🔥 Firebase conectado correctamente en Peregrinos.");
 
@@ -118,9 +125,19 @@ function inicializarPeregrinos() {
   function createChart(location) {
     const canvasId = `chart${capitalize(location)}`;
     const ctx = document.getElementById(canvasId);
-    if (!ctx) return;
+    if (!ctx) {
+      console.error(`Canvas ${canvasId} no encontrado`);
+      return;
+    }
 
     const data = datosProvisionales[location];
+    
+    // Destruir gráfico existente si hay uno
+    const charts = { posada: chartPosada, divina: chartDivina, apodaca: chartApodaca };
+    if (charts[location]) {
+      charts[location].destroy();
+    }
+
     const newChart = new Chart(ctx, {
       ...chartConfig,
       data: createChartData(data.mujeres, data.hombres, data.total)
@@ -129,6 +146,8 @@ function inicializarPeregrinos() {
     if (location === "posada") chartPosada = newChart;
     if (location === "divina") chartDivina = newChart;
     if (location === "apodaca") chartApodaca = newChart;
+    
+    console.log(`✅ Gráfico de ${location} creado`);
   }
 
   function updateLocationCards() {
@@ -148,6 +167,156 @@ function inicializarPeregrinos() {
 
   function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  // ========================================
+  // MANEJO DE MODALES
+  // ========================================
+
+  const modals = {
+    posada: document.getElementById('modalPosada'),
+    divina: document.getElementById('modalDivina'),
+    apodaca: document.getElementById('modalApodaca')
+  };
+
+  // Abrir modal
+  document.querySelectorAll('.btn-view').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const modalId = this.dataset.modal;
+      openModal(modalId);
+    });
+  });
+
+  // Cerrar modal
+  document.querySelectorAll('.modal-close').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const modalId = this.dataset.modal;
+      closeModal(modalId);
+    });
+  });
+
+  // Cerrar modal al hacer clic fuera
+  Object.values(modals).forEach(modal => {
+    modal.addEventListener('click', function(e) {
+      if (e.target === this) {
+        this.classList.remove('active');
+      }
+    });
+  });
+
+  // Cerrar modal con ESC
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      Object.values(modals).forEach(modal => {
+        modal.classList.remove('active');
+      });
+    }
+  });
+
+  function openModal(modalId) {
+    const modal = modals[modalId];
+    if (modal) {
+      modal.classList.add('active');
+      updateModalStats(modalId, datosProvisionales[modalId]);
+      
+      // Crear gráfico después de que el modal sea visible
+      setTimeout(() => {
+        createChart(modalId);
+      }, 100);
+      
+      console.log(`✅ Modal abierto: ${modalId}`);
+    }
+  }
+
+  function closeModal(modalId) {
+    const modal = modals[modalId];
+    if (modal) {
+      modal.classList.remove('active');
+      console.log(`✅ Modal cerrado: ${modalId}`);
+    }
+  }
+
+  // ========================================
+  // CARGAR USUARIOS DESDE FIREBASE
+  // ========================================
+
+  function loadUsersTable() {
+    const usersTableBody = document.getElementById('usersTableBody');
+    const usersRef = ref(db, 'users');
+    
+    onValue(usersRef, (snapshot) => {
+      usersTableBody.innerHTML = '';
+      
+      if (!snapshot.exists()) {
+        usersTableBody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-light);">
+              <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 10px; opacity: 0.3;"></i>
+              <p>No hay usuarios registrados</p>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+      
+      const users = [];
+      snapshot.forEach((childSnapshot) => {
+        users.push({
+          id: childSnapshot.key,
+          ...childSnapshot.val()
+        });
+      });
+      
+      // Ordenar por nombre
+      users.sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
+      
+      users.forEach(user => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${user.nombre || 'N/A'}</td>
+          <td>${user.apellido || 'N/A'}</td>
+          <td>${user.genero || 'N/A'}</td>
+          <td>${user.telefono || 'N/A'}</td>
+          <td>${user.nacimiento || 'N/A'}</td>
+          <td>
+            <button class="btn-action btn-view-user" data-user-id="${user.id}">
+              <i class="fas fa-eye"></i>
+            </button>
+          </td>
+        `;
+        usersTableBody.appendChild(row);
+      });
+      
+      console.log(`✅ ${users.length} usuarios cargados`);
+    }, (error) => {
+      console.error('❌ Error cargando usuarios:', error);
+      usersTableBody.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align: center; padding: 20px; color: var(--error-red);">
+            Error al cargar usuarios
+          </td>
+        </tr>
+      `;
+    });
+  }
+
+  // ========================================
+  // BOTÓN ACTUALIZAR
+  // ========================================
+
+  const refreshBtn = document.getElementById('refreshBtn');
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', function() {
+      console.log('🔄 Actualizando datos...');
+      this.disabled = true;
+      
+      loadUsersTable();
+      
+      setTimeout(() => {
+        this.disabled = false;
+        console.log('✅ Datos actualizados');
+      }, 1000);
+    });
   }
 
   // ========================================
@@ -180,6 +349,7 @@ function inicializarPeregrinos() {
   updateModalStats("posada", datosProvisionales.posada);
   updateModalStats("divina", datosProvisionales.divina);
   updateModalStats("apodaca", datosProvisionales.apodaca);
+  loadUsersTable(); // ← CARGAR TABLA DE USUARIOS
 
   console.log("📊 Datos provisionales cargados:", datosProvisionales);
 }

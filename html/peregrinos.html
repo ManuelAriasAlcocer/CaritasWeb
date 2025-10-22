@@ -35,15 +35,15 @@
         <!-- Sidebar -->
         <aside class="dashboard-sidebar">
             <nav class="sidebar-nav">
-                <a href="../html/dashboard.html" class="nav-item">
+                <a href="dashboard.html" class="nav-item">
                     <i class="fas fa-chart-line"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="../html/peregrinos.html" class="nav-item active">
+                <a href="peregrinos.html" class="nav-item active">
                     <i class="fas fa-users"></i>
                     <span>Peregrinos</span>
                 </a>
-                <a href="../html/anuncios.html" class="nav-item">
+                <a href="anuncios.html" class="nav-item">
                     <i class="fas fa-bullhorn"></i>
                     <span>Anuncios</span>
                 </a>
@@ -60,7 +60,7 @@
             <section class="page-header">
                 <div>
                     <h2><i class="fas fa-users"></i>Peregrinos</h2>
-                    <p>Gestión y estadísticas de usuarios de albergue por ubicación</p>
+                    <p>Gestión y estadísticas de beneficiarios por ubicación</p>
                 </div>
                 <button class="btn-refresh" id="refreshBtn">
                     <i class="fas fa-sync-alt"></i> Actualizar
@@ -106,6 +106,37 @@
                     <button class="btn-view" data-modal="apodaca">
                         <i class="fas fa-chart-bar"></i> Ver Estadísticas
                     </button>
+                </div>
+            </section>
+
+            <!-- Users Table Section -->
+            <section class="users-table-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-users"></i> Usuarios Registrados</h3>
+                </div>
+                <div class="table-container">
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Apellido</th>
+                                <th>Género</th>
+                                <th>Teléfono</th>
+                                <th>Fecha de Nacimiento</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 40px;">
+                                    <div class="loading">
+                                        <i class="fas fa-spinner fa-spin" style="font-size: 32px; color: var(--primary-turquoise);"></i>
+                                        <p style="margin-top: 15px;">Cargando usuarios...</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </section>
         </div>
@@ -214,6 +245,6 @@
     -->
     
     <!-- Peregrinos Script -->
-    <script type = "module" src="../JS/peregrinos.js"></script>
+    <script type = "module" src="../js/peregrinos.js"></script>
 </body>
 </html>
