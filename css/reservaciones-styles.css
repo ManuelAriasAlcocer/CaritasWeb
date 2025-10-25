@@ -57,6 +57,71 @@
     transform: rotate(360deg);
 }
 
+/* ========================================
+   RESERVACIONES PAGE STYLES
+======================================== */
+
+/* Tipo de Reserva Selection (NUEVO - PRINCIPAL) */
+.tipo-reserva-selection {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.tipo-btn {
+    background: var(--white);
+    border: 3px solid var(--border-color);
+    padding: 30px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.tipo-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    border-color: var(--primary-turquoise);
+}
+
+.tipo-btn i {
+    font-size: 48px;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--light-bg);
+    color: var(--text-light);
+    transition: all 0.3s;
+}
+
+.tipo-btn:hover i {
+    background: rgba(23, 162, 184, 0.1);
+    color: var(--primary-turquoise);
+}
+
+.tipo-btn.active {
+    background: linear-gradient(135deg, var(--primary-turquoise) 0%, var(--secondary-turquoise) 100%);
+    border-color: var(--primary-turquoise);
+    color: var(--white);
+    box-shadow: 0 8px 20px rgba(23, 162, 184, 0.4);
+    transform: translateY(-5px);
+}
+
+.tipo-btn.active i {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--white);
+}
+
 /* Albergue Selection */
 .albergue-selection {
     display: grid;
@@ -188,6 +253,7 @@
     color: var(--text-light);
     font-size: 14px;
 }
+
 /* Delete Button */
 .btn-delete {
     background: transparent;

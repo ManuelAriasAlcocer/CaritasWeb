@@ -71,8 +71,20 @@
                 </button>
             </section>
 
-            <!-- Albergue Selection Cards -->
-            <section class="albergue-selection">
+            <!-- Tipo de Reserva Selection (NUEVO - PRINCIPAL) -->
+            <section class="tipo-reserva-selection">
+                <button class="tipo-btn active" data-tipo="hospedaje">
+                    <i class="fas fa-bed"></i>
+                    <span>Hospedaje</span>
+                </button>
+                <button class="tipo-btn" data-tipo="transporte">
+                    <i class="fas fa-bus"></i>
+                    <span>Transporte</span>
+                </button>
+            </section>
+
+            <!-- Albergue Selection (solo visible para Hospedaje) -->
+            <section class="albergue-selection" id="albergueSelection">
                 <button class="albergue-btn active" data-albergue="Posada del Peregrino">
                     <i class="fas fa-home"></i>
                     <span>Posada del Peregrino</span>
@@ -84,16 +96,6 @@
                 <button class="albergue-btn" data-albergue="Apodaca">
                     <i class="fas fa-building"></i>
                     <span>Apodaca</span>
-                </button>
-            </section>
-
-            <!-- Tabs Section -->
-            <section class="reservations-tabs">
-                <button class="tab-btn active" data-tab="hospedaje">
-                    <i class="fas fa-bed"></i> Hospedaje
-                </button>
-                <button class="tab-btn" data-tab="transporte">
-                    <i class="fas fa-bus"></i> Transporte
                 </button>
             </section>
 
@@ -201,6 +203,6 @@
     </div>
 
     <!-- Reservaciones Script (Firebase se importa dentro del módulo) -->
-    <script type="module" src="../JS/reservaciones.js"></script>
+    <script type="module" src="../js/reservaciones.js"></script>
 </body>
 </html>

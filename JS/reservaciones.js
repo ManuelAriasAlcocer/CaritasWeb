@@ -41,7 +41,7 @@ console.log("🔥 Firebase conectado correctamente en Reservaciones.");
 // VARIABLES GLOBALES
 // ========================================
 let currentAlbergue = 'Posada del Peregrino';
-let currentTab = 'hospedaje';
+let currentTipo = 'hospedaje'; // Nueva variable para el tipo
 let deleteTarget = null;
 let unsubscribeHospedaje = null;
 let unsubscribeTransporte = null;
@@ -78,8 +78,9 @@ function inicializarReservaciones() {
   // ========================================
   // ELEMENTOS DEL DOM
   // ========================================
+  const tipoBtns = document.querySelectorAll('.tipo-btn');
   const albergueBtns = document.querySelectorAll('.albergue-btn');
-  const tabBtns = document.querySelectorAll('.tab-btn');
+  const albergueSelection = document.getElementById('albergueSelection');
   const hospedajeSection = document.getElementById('hospedajeSection');
   const transporteSection = document.getElementById('transporteSection');
   const deleteModal = document.getElementById('deleteModal');
@@ -93,29 +94,37 @@ function inicializarReservaciones() {
   // EVENT LISTENERS
   // ========================================
 
-  // Selección de Albergue
+  // Selección de Tipo de Reserva (NUEVO)
+  tipoBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tipoBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTipo = btn.dataset.tipo;
+      
+      if (currentTipo === 'hospedaje') {
+        // Mostrar selector de albergues y tabla de hospedaje
+        albergueSelection.style.display = 'grid';
+        hospedajeSection.style.display = 'block';
+        transporteSection.style.display = 'none';
+        loadHospedaje();
+      } else {
+        // Ocultar selector de albergues y mostrar tabla de transporte
+        albergueSelection.style.display = 'none';
+        hospedajeSection.style.display = 'none';
+        transporteSection.style.display = 'block';
+        loadAllTransporte(); // Nueva función que carga TODO
+      }
+    });
+  });
+
+  // Selección de Albergue (solo afecta a Hospedaje)
   albergueBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       albergueBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       currentAlbergue = btn.dataset.albergue;
-      loadReservations();
-    });
-  });
-
-  // Cambio de Tabs
-  tabBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      tabBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      currentTab = btn.dataset.tab;
-      
-      if (currentTab === 'hospedaje') {
-        hospedajeSection.style.display = 'block';
-        transporteSection.style.display = 'none';
-      } else {
-        hospedajeSection.style.display = 'none';
-        transporteSection.style.display = 'block';
+      if (currentTipo === 'hospedaje') {
+        loadHospedaje();
       }
     });
   });
@@ -127,7 +136,12 @@ function inicializarReservaciones() {
     setTimeout(() => {
       icon.style.transform = 'rotate(0deg)';
     }, 500);
-    loadReservations();
+    
+    if (currentTipo === 'hospedaje') {
+      loadHospedaje();
+    } else {
+      loadAllTransporte();
+    }
   });
 
   // Modal de Eliminación
@@ -162,12 +176,7 @@ function inicializarReservaciones() {
   // FUNCIONES DE CARGA DE DATOS
   // ========================================
 
-  function loadReservations() {
-    loadHospedaje();
-    loadTransporte();
-  }
-
-  // Cargar Reservas de Hospedaje
+  // Cargar Reservas de Hospedaje (filtradas por albergue)
   function loadHospedaje() {
     const hospedajeTableBody = document.getElementById('hospedajeTableBody');
     
@@ -262,9 +271,9 @@ function inicializarReservaciones() {
         <td>${reservation.albergue || '-'}</td>
         <td>${formatDate(reservation.fechaLlegada) || '-'}</td>
         <td>${formatDate(reservation.fechaSalida) || '-'}</td>
-        <td>${reservation.hombres || 0}</td>
-        <td>${reservation.mujeres || 0}</td>
-        <td><strong>${reservation.numPersonas || 0}</strong></td>
+        <td>${reservation.cantidadHombres || 0}</td>
+        <td>${reservation.cantidadMujeres || 0}</td>
+        <td><strong>${reservation.total || 0}</strong></td>
         <td>
           <button class="btn-delete" data-id="${reservation.id}" data-type="hospedaje">
             <i class="fas fa-trash"></i>
@@ -283,8 +292,8 @@ function inicializarReservaciones() {
     });
   }
 
-  // Cargar Reservas de Transporte
-  function loadTransporte() {
+  // Cargar TODAS las Reservas de Transporte (sin filtro de albergue)
+  function loadAllTransporte() {
     const transporteTableBody = document.getElementById('transporteTableBody');
     
     // Mostrar loading
@@ -305,32 +314,21 @@ function inicializarReservaciones() {
     }
 
     try {
-      // Query para transporte
+      // Query para transporte - SIN FILTRO
       const transporteRef = collection(db, 'transporte');
       
-      console.log('🔍 Buscando transporte para:', currentAlbergue);
+      console.log('🔍 Cargando TODAS las reservas de transporte');
       
       // Escuchar TODAS las reservas de transporte
       unsubscribeTransporte = onSnapshot(transporteRef, (snapshot) => {
-        console.log('📦 Total documentos en transporte:', snapshot.size);
-        
         const allTransporte = [];
-        const filteredTransporte = [];
         
         snapshot.forEach((doc) => {
-          const data = doc.data();
-          allTransporte.push({ id: doc.id, ...data });
-          
-          // Filtrar manualmente
-          if (data.albergue === currentAlbergue) {
-            filteredTransporte.push({ id: doc.id, ...data });
-          }
+          allTransporte.push({ id: doc.id, ...doc.data() });
         });
         
-        console.log('🚌 Todos los transportes:', allTransporte);
-        console.log('✅ Transportes filtrados para', currentAlbergue, ':', filteredTransporte);
-        
-        displayTransporte(filteredTransporte);
+        console.log(`🚌 Total de transportes cargados: ${allTransporte.length}`);
+        displayTransporte(allTransporte);
       }, (error) => {
         console.error('❌ Error al cargar transporte:', error);
         transporteTableBody.innerHTML = `
@@ -342,7 +340,7 @@ function inicializarReservaciones() {
         `;
       });
     } catch (error) {
-      console.error('❌ Error en loadTransporte:', error);
+      console.error('❌ Error en loadAllTransporte:', error);
     }
   }
 
@@ -359,7 +357,7 @@ function inicializarReservaciones() {
             <div class="empty-state">
               <i class="fas fa-bus"></i>
               <h4>No hay reservas de transporte</h4>
-              <p>No se encontraron reservas para ${currentAlbergue}</p>
+              <p>No se encontraron reservas de transporte</p>
             </div>
           </td>
         </tr>
@@ -558,6 +556,7 @@ function inicializarReservaciones() {
   // INICIALIZACIÓN
   // ========================================
   
-  loadReservations();
+  // Cargar solo hospedaje al inicio (el tipo por defecto)
+  loadHospedaje();
   console.log("📊 Sistema de reservaciones cargado correctamente.");
 }
