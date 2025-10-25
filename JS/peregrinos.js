@@ -10,6 +10,8 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
 import {
   getFirestore,
+  collection,
+  onSnapshot,
 } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
 // ========================================
@@ -241,31 +243,31 @@ function inicializarPeregrinos() {
   // ========================================
 
   function loadUsersTable() {
-    const usersTableBody = document.getElementById('usersTableBody');
-    const usersRef = ref(db, 'users');
-    
-    onValue(usersRef, (snapshot) => {
-      usersTableBody.innerHTML = '';
+  const usersTableBody = document.getElementById('usersTableBody');
+  const usersRef = collection(db, 'users'); // collection en vez de ref
+  
+  onSnapshot(usersRef, (snapshot) => { // onSnapshot en vez de onValue
+    usersTableBody.innerHTML = '';
       
-      if (!snapshot.exists()) {
+      if (snapshot.empty) {
         usersTableBody.innerHTML = `
-          <tr>
-            <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-light);">
-              <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 10px; opacity: 0.3;"></i>
-              <p>No hay usuarios registrados</p>
-            </td>
-          </tr>
+        <tr>
+              <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-light);">
+                <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 10px; opacity: 0.3;"></i>
+                <p>No hay usuarios registrados</p>
+              </td>
+            </tr>
         `;
-        return;
-      }
-      
-      const users = [];
-      snapshot.forEach((childSnapshot) => {
-        users.push({
-          id: childSnapshot.key,
-          ...childSnapshot.val()
-        });
+      return;
+    }
+    
+    const users = [];
+    snapshot.forEach((doc) => {
+      users.push({
+        id: doc.id,
+        ...doc.data()
       });
+    });
       
       // Ordenar por nombre
       users.sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
@@ -278,11 +280,6 @@ function inicializarPeregrinos() {
           <td>${user.genero || 'N/A'}</td>
           <td>${user.telefono || 'N/A'}</td>
           <td>${user.nacimiento || 'N/A'}</td>
-          <td>
-            <button class="btn-action btn-view-user" data-user-id="${user.id}">
-              <i class="fas fa-eye"></i>
-            </button>
-          </td>
         `;
         usersTableBody.appendChild(row);
       });

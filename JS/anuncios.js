@@ -243,19 +243,34 @@ function getColor(tipo) {
 }
 
 // ========================================
-// ELIMINAR ANUNCIO
+// ELIMINAR ANUNCIO (CORREGIDO)
 // ========================================
 
 async function deleteNoticia(id) {
-  const confirmDelete = confirm("¿Eliminar este anuncio?");
-  if (!confirmDelete) return;
+  if (!id) {
+    console.error("❌ ID de anuncio no válido");
+    return;
+  }
+
+  const confirmDelete = confirm("¿Estás seguro de que deseas eliminar este anuncio?\n\nEsta acción no se puede deshacer.");
+  if (!confirmDelete) {
+    console.log("❌ Eliminación cancelada por el usuario");
+    return;
+  }
 
   try {
-    await deleteDoc(doc(db, "noticias", id));
-    showNotification("🗑️ Anuncio eliminado", "success");
+    console.log("🗑️ Eliminando anuncio con ID:", id);
+    
+    // CORREGIDO: Usar "news" en lugar de "noticias"
+    const docRef = doc(db, "news", id);
+    await deleteDoc(docRef);
+    
+    console.log("✅ Anuncio eliminado exitosamente:", id);
+    showNotification("🗑️ Anuncio eliminado correctamente", "success");
   } catch (error) {
-    console.error("❌ Error al eliminar:", error);
-    showNotification("Error al eliminar anuncio", "error");
+    console.error("❌ Error al eliminar anuncio:", error);
+    console.error("Error completo:", error.message, error.code);
+    showNotification("❌ Error al eliminar anuncio: " + error.message, "error");
   }
 }
 
