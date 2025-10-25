@@ -271,9 +271,9 @@ function inicializarReservaciones() {
         <td>${reservation.albergue || '-'}</td>
         <td>${formatDate(reservation.fechaLlegada) || '-'}</td>
         <td>${formatDate(reservation.fechaSalida) || '-'}</td>
-        <td>${reservation.cantidadHombres || 0}</td>
-        <td>${reservation.cantidadMujeres || 0}</td>
-        <td><strong>${reservation.total || 0}</strong></td>
+        <td>${reservation.hombres || 0}</td>
+        <td>${reservation.mujeres || 0}</td>
+        <td><strong>${reservation.numPersonas || 0}</strong></td>
         <td>
           <button class="btn-delete" data-id="${reservation.id}" data-type="hospedaje">
             <i class="fas fa-trash"></i>
